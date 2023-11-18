@@ -14,70 +14,53 @@ app.listen(PORT, () => {
 */
 
 import { ethers } from 'ethers';
+import wethABI from "./abis/weth.json";
+import Safe, { SafeFactory, SafeAccountConfig, EthersAdapter } from '@safe-global/protocol-kit';
+
+
+
 import dotenv from 'dotenv';
 dotenv.config();
 
 const main = async () => { 
 
-  const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
+  const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL);
   const wallet = new ethers.Wallet(process.env.PRIVATE_KEY!).connect(provider);
 
   const address = wallet.address;
 
-  const wethAddress = '0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6';
-  const wethABI = [
-    {
-    "constant": false,
-    "inputs": [],
-    "name": "deposit",
-    "outputs": [],
-    "payable": true,
-    "stateMutability": "payable",
-    "type": "function"
-    },
-    {
-    "constant": false,
-    "inputs": [{"name": "_from", "type": "address"}, {"name": "_to", "type": "address"}, {"name": "_value", "type": "uint256"}],
-    "name": "transferFrom",
-    "outputs": [{"name": "", "type": "bool"}],
-    "type": "function"
-    },
-    {
-    "constant": false,
-    "inputs": [{"name": "_spender", "type": "address"}, {"name": "_value", "type": "uint256"}],
-    "name": "approve",
-    "outputs": [{"name": "", "type": "bool"}],
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [{"name": "_owner", "type": "address"}],
-      "name": "balanceOf",
-      "outputs": [{"name": "", "type": "uint256"}],
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [{"name": "_owner", "type": "address"}],
-      "name": "balanceOf",
-      "outputs": [{"name": "", "type": "uint256"}],
-      "type": "function"
-    }
-  ];
+  const ethAdapter = new EthersAdapter({
+    ethers,
+    signerOrProvider: wallet
+  })
 
+  const safeAccountConfig: SafeAccountConfig = {
+    owners: [address],
+    threshold: 1
+  }
 
+  const safeVersion='1.3.0';
+  const safeFactory = await SafeFactory.create({ ethAdapter, safeVersion });
+  // if using default signer for foundry then need to specify salt or else CREATE2 call will fail
+  const saltNonce = '283842192393';
+  const safeSdk = await safeFactory.deploySafe({ safeAccountConfig, saltNonce });
 
+  const safeAddress = await safeSdk.getAddress();
+
+  console.log(safeAddress);
   // WETH Contract instance
-  const wethContract = new ethers.Contract(wethAddress, wethABI, wallet);
+  /*
+  const wethContract = new ethers.Contract(process.env.WETH_ADDRESS!, wethABI, wallet);
 
-  console.log(await wethContract.balanceOf(address));
+  console.log((await wethContract.balanceOf(address)).toString());
 
-  const amountToWrap = ethers.parseEther("0.1");
+  const amountToWrap = ethers.utils.parseEther("0.1");
   let tx = await wethContract.deposit({ value: amountToWrap });
   await tx.wait();
 
-  console.log(await wethContract.balanceOf(address));
+  console.log((await wethContract.balanceOf(address)).toString());
   console.log(address);
+  */
 }
 
 main()
