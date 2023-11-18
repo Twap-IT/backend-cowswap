@@ -16,7 +16,7 @@ app.listen(PORT, () => {
 import { ethers } from 'ethers';
 import wethABI from "./abis/weth.json";
 import Safe, { SafeFactory, SafeAccountConfig, EthersAdapter } from '@safe-global/protocol-kit';
-
+import { SafeTransactionDataPartial } from '@safe-global/safe-core-sdk-types';
 
 
 import dotenv from 'dotenv';
@@ -29,6 +29,7 @@ const main = async () => {
 
   const address = wallet.address;
 
+  console.log('signer', address);
   const ethAdapter = new EthersAdapter({
     ethers,
     signerOrProvider: wallet
@@ -42,15 +43,16 @@ const main = async () => {
 
   const safeVersion='1.3.0';
   const safeFactory = await SafeFactory.create({ ethAdapter, safeVersion });
-  // if using default signer for foundry then need to specify salt or else CREATE2 call will fail
-  const saltNonce = '283842192393';
+  // SAFE creation is deterministic so need unique salt per address per SAFE 
+  // or else CREATE2 call will fail
+  const saltNonce = '123338389221';
   const safeSdk = await safeFactory.deploySafe({ safeAccountConfig, saltNonce });
 
   const safeAddress = await safeSdk.getAddress();
+  console.log('safeAddress', safeAddress);
 
-  safeSdk.getFallbackHandler
-  console.log(safeAddress);
-  console.log('fallback', await safeSdk.getFallbackHandler());
+  const fallbackAddress = await safeSdk.getFallbackHandler();
+  console.log('configured fallback', fallbackAddress);
   // WETH Contract instance
   /*
   const wethContract = new ethers.Contract(process.env.WETH_ADDRESS!, wethABI, wallet);
