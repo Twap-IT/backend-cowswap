@@ -36,7 +36,8 @@ const main = async () => {
 
   const safeAccountConfig: SafeAccountConfig = {
     owners: [address],
-    threshold: 1
+    threshold: 1,
+    fallbackHandler: process.env.EXTENSIBLE_FALLBACK_HANDLER_ADDRESS
   }
 
   const safeVersion='1.3.0';
@@ -47,7 +48,9 @@ const main = async () => {
 
   const safeAddress = await safeSdk.getAddress();
 
+  safeSdk.getFallbackHandler
   console.log(safeAddress);
+  console.log('fallback', await safeSdk.getFallbackHandler());
   // WETH Contract instance
   /*
   const wethContract = new ethers.Contract(process.env.WETH_ADDRESS!, wethABI, wallet);
