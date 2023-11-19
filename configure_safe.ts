@@ -4,7 +4,6 @@ import { ethers } from 'ethers';
 import wethABI from "./abis/weth.json";
 import Safe, { SafeFactory, SafeAccountConfig, EthersAdapter, PredictedSafeProps } from '@safe-global/protocol-kit';
 import { SafeTransactionDataPartial } from '@safe-global/safe-core-sdk-types';
-import SafeApiKit from '@safe-global/api-kit';
 
 
 import dotenv from 'dotenv';

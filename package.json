@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "ts-node start.ts",
-    "test-create": "ts-node test_create_safe.ts",
-    "test-configure": "ts-node test_configure_safe.ts"
+    "create-safe": "ts-node create_safe.ts",
+    "configure-safe": "ts-node configure_safe.ts",
+    "twap-order": "ts-node twap_order.ts"
   },
   "keywords": [],
   "author": "",
