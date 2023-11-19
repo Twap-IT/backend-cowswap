@@ -45,7 +45,7 @@ const main = async () => {
   const safeFactory = await SafeFactory.create({ ethAdapter, safeVersion });
   // SAFE creation is deterministic so need unique salt per address per SAFE 
   // or else CREATE2 call will fail
-  const saltNonce = '123338389221';
+  const saltNonce = Math.floor(Math.random() * 10000).toString();
   const safeSdk = await safeFactory.deploySafe({ safeAccountConfig, saltNonce });
 
   const safeAddress = await safeSdk.getAddress();
