@@ -32,7 +32,7 @@ const main = async () => {
   const safeFactory = await SafeFactory.create({ ethAdapter, safeVersion });
   // SAFE creation is deterministic so need unique salt per address per SAFE 
   // or else CREATE2 call will fail
-  const saltNonce = Math.floor(Math.random() * 10000).toString();
+  const saltNonce = Math.floor(Math.random() * 100000).toString();
   const predictedAddress = await safeFactory.predictSafeAddress(safeAccountConfig, saltNonce );
   console.log('predicted address', predictedAddress);
 
@@ -52,6 +52,10 @@ const main = async () => {
 
   const fallbackAddress = await safeSdk.getFallbackHandler();
   console.log('configured fallback', fallbackAddress);
+
+  // configure Extensible callback handler 
+  
+
   // WETH Contract instance
   /*
   const wethContract = new ethers.Contract(process.env.WETH_ADDRESS!, wethABI, wallet);
