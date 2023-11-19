@@ -23,13 +23,6 @@ const main = async () => {
   })
   const safeSdk = await Safe.create({ethAdapter, safeAddress})
 
-
-  const safeAccountConfig: SafeAccountConfig = {
-    owners: [address],
-    threshold: 1,
-    fallbackHandler: process.env.EXTENSIBLE_FALLBACK_HANDLER_ADDRESS
-  }
-
   const contractABI = [
     "function setDomainVerifier(bytes32 domainSeparator, address newVerifier)"
   ];

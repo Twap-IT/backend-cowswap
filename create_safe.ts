@@ -52,22 +52,6 @@ const main = async () => {
   const fallbackAddress = await safeSdk.getFallbackHandler();
   console.log('configured fallback', fallbackAddress);
 
-  // configure Extensible callback handler 
-  
-
-  // WETH Contract instance
-  /*
-  const wethContract = new ethers.Contract(process.env.WETH_ADDRESS!, wethABI, wallet);
-
-  console.log((await wethContract.balanceOf(address)).toString());
-
-  const amountToWrap = ethers.utils.parseEther("0.1");
-  let tx = await wethContract.deposit({ value: amountToWrap });
-  await tx.wait();
-
-  console.log((await wethContract.balanceOf(address)).toString());
-  console.log(address);
-  */
 }
 
 main()
