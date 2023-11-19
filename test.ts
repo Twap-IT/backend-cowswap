@@ -1,21 +1,8 @@
-/*
-import express from 'express';
-import { web3Router } from './routes/web3.routes';
 
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-app.use(express.json()); // Middleware for parsing JSON bodies
-app.use('/web3', web3Router); // Web3 routes
-
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
-*/
 
 import { ethers } from 'ethers';
 import wethABI from "./abis/weth.json";
-import Safe, { SafeFactory, SafeAccountConfig, EthersAdapter } from '@safe-global/protocol-kit';
+import Safe, { SafeFactory, SafeAccountConfig, EthersAdapter, PredictedSafeProps } from '@safe-global/protocol-kit';
 import { SafeTransactionDataPartial } from '@safe-global/safe-core-sdk-types';
 
 
@@ -46,7 +33,19 @@ const main = async () => {
   // SAFE creation is deterministic so need unique salt per address per SAFE 
   // or else CREATE2 call will fail
   const saltNonce = Math.floor(Math.random() * 10000).toString();
-  const safeSdk = await safeFactory.deploySafe({ safeAccountConfig, saltNonce });
+  const predictedAddress = await safeFactory.predictSafeAddress(safeAccountConfig, saltNonce );
+  console.log('predicted address', predictedAddress);
+
+  let safeSdk:any;
+  try {
+    safeSdk = await safeFactory.deploySafe({ safeAccountConfig, saltNonce });
+  }
+  catch(e){
+    // SAFE is deployed but RPC errors out, so just connect to it
+    console.log("workaround - connecting to deployed SAFE");
+    safeSdk = await Safe.create({ethAdapter, safeAddress: predictedAddress})
+  }
+
 
   const safeAddress = await safeSdk.getAddress();
   console.log('safeAddress', safeAddress);
